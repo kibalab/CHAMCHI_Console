@@ -105,6 +105,7 @@ public class PoolManager : UdonSharpBehaviour
         {
             tmp += _idArr[i].ToString();
         }
+        logPanel.Log(this, tmp);
     }
 
 
