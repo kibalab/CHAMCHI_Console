@@ -17,14 +17,11 @@ public class PoolManager : UdonSharpBehaviour
     {
         /* player join => allocateID to list */
         /*************Owner Only**************/
-        logPanel.PrintLog("playerjoineed : " + player.displayName);
+        
         if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
         {
-            logPanel.PrintLog("you are not owner");
             return;
         }
-
-
         for (int i = 0; i < _idArr.Length; i++)
         {
             if (_idArr[i] == 0)
@@ -35,31 +32,35 @@ public class PoolManager : UdonSharpBehaviour
         }
         RequestSerialization();
         SyncArr();
+
+        logPanel.LogError(this, "player joined! pool allocation success : " + player.displayName);
     }
 
     public override void OnPlayerLeft(VRCPlayerApi player)
     {
-        logPanel.LogWarn(this, "player left : " + player.displayName + " " + player.playerId);
-        
         /* player left => Deallocate from list */
         /***************Owner Only**************/
-        if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject)){
-            logPanel.LogError(this, "OnplayerLeft : You are not pool owner");
+        if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             return;
-        }
-        logPanel.Log(this, "OnplayerLeft : you are pool owner!");
 
         for (int i = 0; i < _idArr.Length; i++)
         {
-            if (VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
+            if (_idArr[i] == 0)
             {
-                logPanel.Log(this,"Remove " + _idArr[i].ToString() + " from the pool");
+                continue;
+            }
+            else if(VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
+            {
+                //logPanel.Log(this, "Remove " + _idArr[i].ToString() + " from the pool");
+                syncedObjectArr[i].resetLog(); 
                 _idArr[i] = 0;
             }
         }
 
         RequestSerialization();
         SyncArr();
+        logPanel.LogError(this, "player left! pool deallocation success : " + player.displayName);
+        
     }
 
     public override void OnDeserialization()
@@ -69,6 +70,9 @@ public class PoolManager : UdonSharpBehaviour
 
     public void SyncArr()
     {
+        /*유저 나갈때마다 처리*/
+        ignoreFisrtLog();
+
         /* 1회만 작동하면 됨*/
         if (myIndex != -1)
             return;
@@ -91,14 +95,31 @@ public class PoolManager : UdonSharpBehaviour
 
 
         syncedObjectArr[myIndex].getOwner();
-        Debug.Log("SyncArr success");
+
+        
+    }
+
+
+    /* 미할당된 오브젝트는 isFirstLog = false */
+    /* 입장시 모두 true로 기존 유저들 첫 로그 무시 */
+    public void ignoreFisrtLog(){
+        for(int i = 0; i < _idArr.Length; i++){
+            if(_idArr[i] == 0){
+                /*array out of bound*/
+                /*현재 개수 안맞음 나중에맞출것 */
+                if(i >= syncedObjectArr.Length){
+                    break;
+                }
+                syncedObjectArr[i].setIsFirstSync(false);
+            }
+        }
     }
 
 
 
+      /* this is for debug*/
     public void getStatus()
     {
-        /* this is for debug*/
         string tmp = "";
 
         for (int i = 0; i < 20; i++)
@@ -111,13 +132,12 @@ public class PoolManager : UdonSharpBehaviour
 
 
 
-
+    /* LogPanel과 SyncedObject 연결용 */
     public void bridgeLog(string data)
     {
         /* pool not registered */
         if (myIndex == -1)
             return;
-
         syncedObjectArr[myIndex].sendLog(data);
     }
 
