@@ -63,10 +63,12 @@ public class SyncedObject : UdonSharpBehaviour
     
 
     public void localLog(string data){
+        savedLocalLog += data + '\n';
         logPanel.PrintLog(data);
     }
 
     public void remoteLog(string data){
+        savedRemoteLog += data + '\n';
         logPanel.PrintLog(data);
     }
 

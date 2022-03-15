@@ -75,7 +75,7 @@ public class LogPanel : UdonSharpBehaviour
 
     public void PrintLog(string data)
     {
-        text.text += '\n' + data;
+        text.text += data + '\n';
     }
 
 
