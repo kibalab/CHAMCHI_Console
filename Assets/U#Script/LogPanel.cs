@@ -50,9 +50,16 @@ public class LogPanel : UdonSharpBehaviour
 
     private string setLogData(UnityEngine.Object classObject, string data, int logtype)
     {
+        
 
         string timedata = prefix_green +"[" + DateTime.Now.ToString("HH:mm:ss.ff") + "]"+ suffix + " | ";
-        string username = prefix_username + "[" + Networking.LocalPlayer.displayName + "] "+ suffix;
+
+        string username;
+        if(Networking.IsInstanceOwner){
+            username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName + "] "+ suffix;
+        }else{
+            username = prefix_username + "[" + Networking.LocalPlayer.displayName + "] "+ suffix;
+        }
         string logdata;
         string colortype = null;
         switch (logtype)
