@@ -10,10 +10,12 @@ public class PoolManager : UdonSharpBehaviour
     [UdonSynced(UdonSyncMode.None)] private int[] _idArr = new int[100];
 
     public SyncedObject[] syncedObjectArr;
-    private int myIndex = -1;
+    public int myIndex = -1;
     public LogPanel logPanel;
 
     public DropDown dropDown;
+
+
 
     public override void OnPlayerJoined(VRCPlayerApi player)
     {
@@ -70,9 +72,10 @@ public class PoolManager : UdonSharpBehaviour
     {
         SyncArr();
     }
-
     public void SyncArr()
-    {
+    {  
+        dropDown.RefreshItem(_idArr);
+        
         /*유저 나갈때마다 처리*/
         ignoreFisrtLog();
 
@@ -143,5 +146,9 @@ public class PoolManager : UdonSharpBehaviour
             return;
         syncedObjectArr[myIndex].sendLog(data);
     }
+
+    public string getRemoteLog(int index) => syncedObjectArr[index].getRemoteLog();
+
+    public string getLocalLog(int index) => syncedObjectArr[index].getLocalLog();
 
 }

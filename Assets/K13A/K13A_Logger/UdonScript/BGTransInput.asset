@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: BGTransInput
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: cbb0b4af6fe0c74429de1cbf91e2b82b,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 8dd053c4a4cefaf4688f6242681d45e1,
     type: 2}
   udonAssembly: 
   assemblyError: 

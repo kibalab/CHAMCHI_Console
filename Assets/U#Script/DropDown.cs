@@ -17,10 +17,9 @@ using VRC.Udon;
         public GameObject Tamplate;
 
         public DropDownItem[] Items;
-        public int ItemCount = 2; // 1 부터 시작함 (개수)
 
-        public UdonSharpBehaviour EventBehaviour;
-        public string EventMethod = "";
+        public int ItemCount = 2; // 1 부터 시작함 (개수)
+        public LogPanel logPanel;
 
         private void Start()
         {
@@ -39,12 +38,12 @@ using VRC.Udon;
             Title.text = isOpen ? TitleConents : Items[SelectedID].Title;
         }
 
-        public void ChangeSelected(int id)
+        public void ChangeSelected(int DropDownIndex, int poolIndex)
         {
-            SelectedID = id;
+            SelectedID = DropDownIndex;
             Interact();
             UpdateItemSetList();
-            EventBehaviour.SendCustomEvent(EventMethod);
+            logPanel.OnDropDownChanged(poolIndex);
         }
 
         public void AddItem(string title, object data)
@@ -54,6 +53,25 @@ using VRC.Udon;
             ItemCount++;
 
             UpdateItemSetList();
+        }
+
+        public void RefreshItem(int[] idArr){
+
+
+            for(int i = 0; i < idArr.Length; i++){
+                if(idArr[i] == 0){
+                    continue;
+                }else if(VRCPlayerApi.GetPlayerById(idArr[i]) == Networking.LocalPlayer){
+                    continue;
+                }else{
+                    Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName;
+                    Items[ItemCount].Data = i;
+                    ItemCount++;
+                }
+            }          
+
+
+            UpdateItemSetList();  
         }
 
         public void DeleteItembyData(object data)
@@ -92,11 +110,5 @@ using VRC.Udon;
             }
 
             return false;
-        }
-
-        public void SetEvent(UdonSharpBehaviour target, string name)
-        {
-            EventBehaviour = target;
-            EventMethod = name;
         }
     }
