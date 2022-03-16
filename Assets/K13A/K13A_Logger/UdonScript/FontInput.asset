@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: FontInput
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 82e9f6855b30c844d8a8f5093f408c38,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: f234f78dedb4b624b9faa652a6699b30,
     type: 2}
   udonAssembly: 
   assemblyError: 

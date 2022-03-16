@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f11136daadff0b44ac2278a314682ab, type: 3}
   m_Name: PenLine
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: a9f50662c60a0a44e814d91c78818c83,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 00ae5df195538f24d9319225782fc08d,
     type: 2}
   udonAssembly: ".data_start\r\n\r\n    .export lineRenderer\r\n    .sync points,
     none\r\n    \r\n    __instance_0: %UnityEngineLineRenderer, null\r\n    __tolerance_0:

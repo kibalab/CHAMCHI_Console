@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f11136daadff0b44ac2278a314682ab, type: 3}
   m_Name: Chooser
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: da2c32b83e1c3aa4cafdc726634ba21e,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: f8917e3372c1bb04a800bf40a2af29f1,
     type: 2}
   udonAssembly: ".data_start\r\n\r\n    .export objects\r\n    .export ActiveSceneLabel\r\n   
     .sync currentIndex, none\r\n    \r\n    __instance_0: %VRCUdonUdonBehaviour,

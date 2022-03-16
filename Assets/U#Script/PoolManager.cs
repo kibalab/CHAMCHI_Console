@@ -13,6 +13,8 @@ public class PoolManager : UdonSharpBehaviour
     private int myIndex = -1;
     public LogPanel logPanel;
 
+    public DropDown dropDown;
+
     public override void OnPlayerJoined(VRCPlayerApi player)
     {
         /* player join => allocateID to list */
@@ -52,6 +54,7 @@ public class PoolManager : UdonSharpBehaviour
             else if(VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
             {
                 //logPanel.Log(this, "Remove " + _idArr[i].ToString() + " from the pool");
+                dropDown.DeleteItembyData(syncedObjectArr[i]);
                 syncedObjectArr[i].resetLog(); 
                 _idArr[i] = 0;
             }
@@ -94,7 +97,7 @@ public class PoolManager : UdonSharpBehaviour
             return;
 
 
-        syncedObjectArr[myIndex].getOwner();
+        syncedObjectArr[myIndex].getOwner(); // KIBA : 왜 GetOwner에요...?
 
         
     }
