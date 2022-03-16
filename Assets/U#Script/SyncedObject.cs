@@ -16,8 +16,8 @@ public class SyncedObject : UdonSharpBehaviour
 
     private string lastlog = null;
 
-    public string savedRemoteLog = "";
-    public string savedLocalLog = "";
+    private string savedRemoteLog = "";
+    private string savedLocalLog = "";
 
     
     public void getOwner(){
@@ -32,7 +32,7 @@ public class SyncedObject : UdonSharpBehaviour
     }
 
     public void sendLog(string data){
-        localLog(data);
+        setLocalLog(data);
         if(!isLogSaved){
             _syncedLogData = data;
             isLogSaved = true;
@@ -58,20 +58,27 @@ public class SyncedObject : UdonSharpBehaviour
             return;
         }
         //logPanel.PrintLog("on deserialization 통과 : " + this.gameObject.name);
-        remoteLog(_syncedLogData);
+        setRemoteLog(_syncedLogData);
     }
     
 
-    public void localLog(string data){
+    public void setLocalLog(string data){
         savedLocalLog += data + '\n';
-        logPanel.PrintLog(data);
+        logPanel.PrintLog(data, int.Parse(this.gameObject.name));
     }
 
-    public void remoteLog(string data){
+    public void setRemoteLog(string data){
         savedRemoteLog += data + '\n';
-        logPanel.PrintLog(data);
+        logPanel.PrintLog(data, int.Parse(this.gameObject.name));
     }
+    public string getLocalLog() => savedLocalLog;
+    public string getRemoteLog() => savedRemoteLog;
 
+
+    /* 수신한 remote log 해당 유저 나갈때 초기화 */
+    public override void OnOwnershipTransferred(VRCPlayerApi player) {
+        savedRemoteLog = "";
+    }
     public void resetLog(){
         Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
         _syncedLogData = "default";
@@ -80,14 +87,5 @@ public class SyncedObject : UdonSharpBehaviour
     }
 
 
-    public void getlog(){
-        logPanel.PrintLog(this.gameObject.name + " : " + _syncedLogData);
-    }
-    private void Update() {
-        
-        if(Input.GetKeyDown(KeyCode.F10)){
-            getlog();
-        }
-    }
 
 }

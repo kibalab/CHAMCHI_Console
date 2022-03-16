@@ -19,6 +19,8 @@ public class LogPanel : UdonSharpBehaviour
     private char[] hex = { '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', };
     private string prefix_username;
 
+    private string logAll;
+
     public DropDown dropDown;
 
     /*
@@ -82,18 +84,40 @@ public class LogPanel : UdonSharpBehaviour
 
     }
 
-    public void OnDropDownChanged() // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
+    public void OnDropDownChanged(int arrIndex) // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
     {
-        var ItemID = dropDown.SelectedID;
-
-        /*
-         * TODO
-         */
+        switch(arrIndex){
+            case 0:
+                text.text = pool.getLocalLog(arrIndex);
+                break;
+            case 1:
+                /* all */
+                text.text = logAll;
+                break;
+            default:
+                text.text = pool.getRemoteLog(arrIndex);
+                break;
+        }
+        
+        
     }
 
-    public void PrintLog(string data)
+    public void PrintLog(string data, int syncedObjectIndex)
     {
-        text.text += data + '\n';
+        if(dropDown.SelectedID == 1){
+            /* 전체출력 */
+            text.text += data + '\n';
+        }else if(dropDown.SelectedID == 0){
+            /* 로컬 출력 */
+            if(pool.myIndex == syncedObjectIndex){
+                text.text += data + '\n';
+            }
+        }else{
+            if( (int)dropDown.Items[dropDown.SelectedID].Data == syncedObjectIndex){
+                text.text += data + '\n';
+            }
+        }
+        logAll += data + '\n';
     }
 
 
