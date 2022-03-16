@@ -19,6 +19,8 @@ public class LogPanel : UdonSharpBehaviour
     private char[] hex = { '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', };
     private string prefix_username;
 
+    public DropDown dropDown;
+
     /*
         <color=green>[22:22:22.22]</color> | <color=white> Hello, World!</color>
     <color=green>[22:22:22.22]</color> | <color=orange> Oh, Warning!</color>
@@ -78,6 +80,15 @@ public class LogPanel : UdonSharpBehaviour
 
         return timedata + username + logdata;
 
+    }
+
+    public void OnDropDownChanged() // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
+    {
+        var ItemID = dropDown.SelectedID;
+
+        /*
+         * TODO
+         */
     }
 
     public void PrintLog(string data)
