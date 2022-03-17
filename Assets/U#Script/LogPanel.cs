@@ -10,6 +10,9 @@ public class LogPanel : UdonSharpBehaviour
 {
     public PoolManager pool;
     public Text text;
+    public Text playername;
+    public Text instanceowner;
+    public int maxlen = 40000;
 
     private string prefix_red = "<color=red>";
     private string prefix_white = "<color=white>";
@@ -23,11 +26,7 @@ public class LogPanel : UdonSharpBehaviour
 
     public DropDown dropDown;
 
-    /*
-        <color=green>[22:22:22.22]</color> | <color=white> Hello, World!</color>
-    <color=green>[22:22:22.22]</color> | <color=orange> Oh, Warning!</color>
-    <color=green>[22:22:22.22]</color> | <color=red> No, Error!</color>
-      */
+    public Text LogSize;
 
     public void Log(UnityEngine.Object classObject, string data)
     {
@@ -50,6 +49,10 @@ public class LogPanel : UdonSharpBehaviour
     private void Start() {
         string ColorCode = $"#{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}";
         prefix_username = $"<color={ColorCode}>";
+        playername.text = "PlayerName : " + Networking.LocalPlayer.displayName;
+    }
+    public override void OnOwnershipTransferred(VRCPlayerApi player) {
+        instanceowner.text = "Instance Owner : " + Networking.GetOwner(this.gameObject).displayName;
     }
 
     private string setLogData(UnityEngine.Object classObject, string data, int logtype)
@@ -59,7 +62,7 @@ public class LogPanel : UdonSharpBehaviour
         string timedata = prefix_green +"[" + DateTime.Now.ToString("HH:mm:ss.ff") + "]"+ suffix + " | ";
 
         string username;
-        if(Networking.IsInstanceOwner){
+        if(Networking.LocalPlayer.isMaster){
             username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName + "] "+ suffix;
         }else{
             username = prefix_username + "[" + Networking.LocalPlayer.displayName + "] "+ suffix;
@@ -84,22 +87,15 @@ public class LogPanel : UdonSharpBehaviour
 
     }
 
-    public void OnDropDownChanged(int arrIndex) // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
-    {
-        switch(arrIndex){
-            case 0:
-                text.text = pool.getLocalLog(arrIndex);
-                break;
-            case 1:
-                /* all */
-                text.text = logAll;
-                break;
-            default:
-                text.text = pool.getRemoteLog(arrIndex);
-                break;
+    public void OnDropDownChanged() // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
+    {  
+        if(dropDown.SelectedID == 1){
+         text.text = logAll;
+        }else if(dropDown.SelectedID == 0){
+            text.text = pool.bridgeSavedLog(pool.myIndex);
+        }else{
+            text.text = pool.bridgeSavedLog(dropDown.getCurrentItemData());
         }
-        
-        
     }
 
     public void PrintLog(string data, int syncedObjectIndex)
@@ -118,6 +114,25 @@ public class LogPanel : UdonSharpBehaviour
             }
         }
         logAll += data + '\n';
+        LengthAdjust();
+    }
+
+
+    public void LengthAdjust(){
+        while(text.text.Length > maxlen){
+
+            int found = text.text.IndexOf('\n');
+            text.text = text.text.Remove(0, found + 1);
+        }
+
+        LogSize.text = String.Format("{0} / <size=7>{1}</size>", text.text.Length, maxlen);
+        
+    }
+    public void Clear(){
+        text.text = "";
+        logAll = "";
+        LogSize.text = String.Format("{0} / <size=7>{1}</size>", 0, maxlen);
+        /* remote log clear code */
     }
 
 

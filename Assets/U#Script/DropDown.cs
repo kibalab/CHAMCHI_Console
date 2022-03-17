@@ -10,7 +10,6 @@ using VRC.Udon;
         public bool isOpen = false;
 
         public int SelectedID = 0;
-
         public string TitleConents = "";
         public Text Title;
 
@@ -38,31 +37,28 @@ using VRC.Udon;
             Title.text = isOpen ? TitleConents : Items[SelectedID].Title;
         }
 
-        public void ChangeSelected(int DropDownIndex, int poolIndex)
+        public void ChangeSelected(int DropDownIndex)
         {
             SelectedID = DropDownIndex;
             Interact();
             UpdateItemSetList();
-            logPanel.OnDropDownChanged(poolIndex);
+            logPanel.OnDropDownChanged();
         }
 
-        public void AddItem(string title, object data)
-        {
-            Items[ItemCount].Title = title;
-            Items[ItemCount].Data = data;
-            ItemCount++;
-
-            UpdateItemSetList();
+        public int getCurrentItemData(){
+            return (int)Items[SelectedID].Data;
+            
         }
-
         public void RefreshItem(int[] idArr){
-
+            ItemCount = 2;
 
             for(int i = 0; i < idArr.Length; i++){
+                /* player not exist */
                 if(idArr[i] == 0){
                     continue;
+                    /* local player */
                 }else if(VRCPlayerApi.GetPlayerById(idArr[i]) == Networking.LocalPlayer){
-                    continue;
+                    /* remote player */
                 }else{
                     Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName;
                     Items[ItemCount].Data = i;
@@ -72,22 +68,6 @@ using VRC.Udon;
 
 
             UpdateItemSetList();  
-        }
-
-        public void DeleteItembyData(object data)
-        {
-            for (var i = 0; i < Items.Length; i++)
-            {
-                if(Items[i].Data == data)
-                {
-                    var tmp = Items[i];
-                    Items[i] = Items[ItemCount - 1];
-                    Items[ItemCount - 1] = tmp;
-                }
-            }
-            ItemCount--;
-
-            UpdateItemSetList();
         }
 
         public void UpdateItemSetList()

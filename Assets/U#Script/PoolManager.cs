@@ -56,7 +56,6 @@ public class PoolManager : UdonSharpBehaviour
             else if(VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
             {
                 //logPanel.Log(this, "Remove " + _idArr[i].ToString() + " from the pool");
-                dropDown.DeleteItembyData(syncedObjectArr[i]);
                 syncedObjectArr[i].resetLog(); 
                 _idArr[i] = 0;
             }
@@ -147,8 +146,6 @@ public class PoolManager : UdonSharpBehaviour
         syncedObjectArr[myIndex].sendLog(data);
     }
 
-    public string getRemoteLog(int index) => syncedObjectArr[index].getRemoteLog();
-
-    public string getLocalLog(int index) => syncedObjectArr[index].getLocalLog();
+    public string bridgeSavedLog(int index) => syncedObjectArr[index].getSavedLog();
 
 }
