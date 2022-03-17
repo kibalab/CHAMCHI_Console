@@ -68,13 +68,16 @@ public class SyncedObject : UdonSharpBehaviour
     }
 
     public string getSavedLog() => perUserSavedLog;
+    public void resetSavedLog(){
+        perUserSavedLog = "";
+    }
 
 
     /* 수신한 remote log 해당 유저 나갈때 초기화 */
     public override void OnOwnershipTransferred(VRCPlayerApi player) {
         perUserSavedLog = "";
     }
-    public void resetLog(){
+    public void resetOnPlayerExit(){
         Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
         _syncedLogData = "default";
         RequestSerialization();
