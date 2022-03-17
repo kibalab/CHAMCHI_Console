@@ -109,7 +109,7 @@ public class LogPanel : UdonSharpBehaviour
                 text.text += data + '\n';
             }
         }else{
-            if( (int)dropDown.Items[dropDown.SelectedID].Data == syncedObjectIndex){
+            if( dropDown.getCurrentItemData() == syncedObjectIndex){
                 text.text += data + '\n';
             }
         }
@@ -122,7 +122,7 @@ public class LogPanel : UdonSharpBehaviour
         while(text.text.Length > maxlen){
 
             int found = text.text.IndexOf('\n');
-            text.text = text.text.Remove(0, found + 1);
+            text.text = text.text.Substring(found+1);
         }
 
         LogSize.text = String.Format("{0} / <size=7>{1}</size>", text.text.Length, maxlen);
@@ -130,10 +130,24 @@ public class LogPanel : UdonSharpBehaviour
     }
     public void Clear(){
         text.text = "";
-        logAll = "";
         LogSize.text = String.Format("{0} / <size=7>{1}</size>", 0, maxlen);
         /* remote log clear code */
-    }
+
+        int num = dropDown.SelectedID;
+
+        switch(num){
+            case 0://local
+                pool.bridgeResetLog(pool.myIndex);
+                break;
+            case 1://all
+                pool.bridgeResetLogAll();
+                logAll = "";
+                break;
+            default://remote user
+                pool.bridgeResetLog(dropDown.getCurrentItemData());
+                break;
+        }
+    }   
 
 
 }
