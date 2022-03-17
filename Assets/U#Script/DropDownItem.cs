@@ -49,6 +49,6 @@ using VRC.Udon;
 
         public override void Interact()
         {
-            Parents.ChangeSelected(ItemID, (int)Data);
+            Parents.ChangeSelected(ItemID);
         }
     }
