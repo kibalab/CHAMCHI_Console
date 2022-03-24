@@ -32,7 +32,7 @@ public class DebugEditor : Editor
     SerializedProperty m_prefix_green;
     SerializedProperty m_prefix_yellow;
 
-    Color Red = Color.red, White = Color.white, Green = Color.green, Yellow = Color.yellow;
+    Color Red = Color.red, White = Color.white, Green = new Color(0, 0.5f, 0), Yellow = Color.yellow;
 
     private ReorderableList list;
 
@@ -164,8 +164,8 @@ public class DebugEditor : Editor
         serializedObject.Update();
 
         
-        if (m_maxlen.intValue > 3000)
-            EditorGUILayout.HelpBox("Values above 3,000 may cause rendering problems for continuous output.", MessageType.Warning);
+        if (m_maxlen.intValue > 30000)
+            EditorGUILayout.HelpBox("Values above 3,0000 may cause rendering problems for continuous output.", MessageType.Warning);
         else
             GUILayout.Space(42);
 
@@ -173,7 +173,7 @@ public class DebugEditor : Editor
         EditorGUILayout.LabelField("<b>[Message]</b>", GUI.skin.label);
         EditorGUILayout.LabelField("Maximum Count");
         var origin_font = GUI.skin.label.font;
-        GUI.skin.label.font = behaviour.text.font;
+        if(behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
         EditorGUILayout.BeginHorizontal(GUI.skin.box);
         EditorGUILayout.LabelField($"<b><size=15>" +
                                    $"0000" +
@@ -181,14 +181,14 @@ public class DebugEditor : Editor
                                    $"</size><size=10>" +
                                    $"{m_maxlen.intValue}" +
                                    $"</size></b>", GUI.skin.label, GUILayout.Width(80));
-        m_maxlen.intValue = EditorGUILayout.IntSlider(m_maxlen.intValue, 10, 10000);
+        m_maxlen.intValue = EditorGUILayout.IntSlider(m_maxlen.intValue, 10, 100000);
         EditorGUILayout.EndHorizontal();
         GUI.skin.label.font = origin_font;
 
 
         GUILayout.Space(25);
         EditorGUILayout.LabelField("<b>[Color]</b>", GUI.skin.label);
-        GUI.skin.label.font = behaviour.text.font;
+        if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
         EditorGUILayout.BeginVertical(GUI.skin.box);
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"<b><size=15>" +
