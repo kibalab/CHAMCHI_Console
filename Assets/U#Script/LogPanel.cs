@@ -14,10 +14,10 @@ public class LogPanel : UdonSharpBehaviour
     public Text instanceowner;
     public int maxlen = 40000;
 
-    private string prefix_red = "<color=red>";
-    private string prefix_white = "<color=white>";
-    private string prefix_green = "<color=green>";
-    private string prefix_yellow = "<color=yellow>";
+    public string prefix_red = "<color=red>";
+    public string prefix_white = "<color=white>";
+    public string prefix_green = "<color=green>";
+    public string prefix_yellow = "<color=yellow>";
     private string suffix = "</color>";
     private char[] hex = { '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', };
     private string prefix_username;
@@ -27,6 +27,13 @@ public class LogPanel : UdonSharpBehaviour
     public DropDown dropDown;
 
     public Text LogSize;
+
+    #region Editor Setting
+    #if UNITY_EDITOR
+    public bool m_AutoSet;
+    public bool m_foldAdvanced;
+    #endif
+    #endregion
 
     public void Log(UnityEngine.Object classObject, string data)
     {
