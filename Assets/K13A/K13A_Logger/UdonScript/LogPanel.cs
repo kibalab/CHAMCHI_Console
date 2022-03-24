@@ -72,9 +72,9 @@ public class LogPanel : UdonSharpBehaviour
 
         string username;
         if(Networking.LocalPlayer.isMaster){
-            username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName +'.'+Networking.LocalPlayer.playerId.ToString() + "] "+ suffix;
+            username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName +'.'+ Networking.LocalPlayer.playerId.ToString() + "] "+ suffix;
         }else{
-            username = prefix_username + "[" + Networking.LocalPlayer.displayName + "] "+ suffix;
+            username = prefix_username + "[" + Networking.LocalPlayer.displayName +'.'+ Networking.LocalPlayer.playerId.ToString() + "] "+ suffix;
         }
         string logdata;
         string colortype = null;
