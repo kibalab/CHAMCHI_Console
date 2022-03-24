@@ -12,7 +12,7 @@ public class LogPanel : UdonSharpBehaviour
     public Text text;
     public Text playername;
     public Text instanceowner;
-    public int maxlen = 40000;
+    public int maxlen;
 
     public string prefix_red = "<color=red>";
     public string prefix_white = "<color=white>";
@@ -57,6 +57,8 @@ public class LogPanel : UdonSharpBehaviour
         string ColorCode = $"#{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}";
         prefix_username = $"<color={ColorCode}>";
         playername.text = "PlayerName : " + Networking.LocalPlayer.displayName;
+        instanceowner.text = "Instance Owner : " + Networking.GetOwner(this.gameObject).displayName;
+        
     }
     public override void OnOwnershipTransferred(VRCPlayerApi player) {
         instanceowner.text = "Instance Owner : " + Networking.GetOwner(this.gameObject).displayName;
@@ -70,7 +72,7 @@ public class LogPanel : UdonSharpBehaviour
 
         string username;
         if(Networking.LocalPlayer.isMaster){
-            username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName + "] "+ suffix;
+            username = prefix_username + "[Owner : " + Networking.LocalPlayer.displayName +'.'+Networking.LocalPlayer.playerId.ToString() + "] "+ suffix;
         }else{
             username = prefix_username + "[" + Networking.LocalPlayer.displayName + "] "+ suffix;
         }
