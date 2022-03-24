@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: DropDownItem
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 6794c8336b1483346b117be348a3e1f3,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: ad2b317527553714684cc2f8a10fbbdb,
     type: 2}
   udonAssembly: 
   assemblyError: 
