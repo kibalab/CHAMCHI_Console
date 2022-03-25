@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: SpinningCubes_4_Spinner
+  m_Name: tst
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 123520b94a6cc634cbe0cb08fdc933ad,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: e0b938dd80e1c3b49a9ddd7f0a377b24,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: 03ed8b36c71614049ab25ac054e687d1, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: 6357e556049abd04fbcf6e9cbcd0c334, type: 3}
   behaviourSyncMode: 0
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
@@ -25,7 +25,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
-    - {fileID: 11500000, guid: 35c09bcf2e0726949b1d0fa2619aae66, type: 3}
+    - {fileID: 11500000, guid: e92f7f0b71729b8498cf97af8f0a655c, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -50,7 +50,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: signal
+      Data: log
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: UdonSharp.Examples.Tutorials.SpinningCubes_4_Signal, Assembly-CSharp
+      Data: LogPanel, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -77,10 +77,10 @@ MonoBehaviour:
       Data: VRCUdonUdonBehaviour
     - Name: symbolOriginalName
       Entry: 1
-      Data: signal
+      Data: log
     - Name: symbolUniqueName
       Entry: 1
-      Data: signal
+      Data: log
     - Name: symbolDefaultValue
       Entry: 6
       Data: 

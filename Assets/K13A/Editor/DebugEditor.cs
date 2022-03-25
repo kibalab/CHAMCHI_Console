@@ -99,6 +99,8 @@ public class DebugEditor : Editor
                         //debugVar.SetValue(behaviour, target);
                         var udon = behaviour.GetComponent<UdonBehaviour>();
 
+                        ((UdonSharpProgramAsset)udon.programSource).CompileCsProgram();
+
                         bool isContain = false;
                         foreach (var symbol in udon.publicVariables.VariableSymbols)
                         {
@@ -238,7 +240,7 @@ public class DebugEditor : Editor
 
         GUILayout.Space(15);
 
-        if (GUILayout.Button("Set Behaviour All Debug Fields"))
+        if (GUILayout.Button("Compile Program & Set Debug Fields"))
         {
             UpdateIncludeScripts();
         }
