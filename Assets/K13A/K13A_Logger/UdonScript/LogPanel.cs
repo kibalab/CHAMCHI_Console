@@ -37,31 +37,46 @@ public class LogPanel : UdonSharpBehaviour
 
     public void Log(UnityEngine.Object classObject, string data)
     {
+#if !UNITY_EDITOR
         string logdata = setLogData(classObject, data, 0);
         pool.bridgeLog(logdata);
+#else
+        Debug.Log($"[LOCAL][{((UdonSharpBehaviour)classObject).GetUdonTypeName()}] {data}");
+#endif
     }
 
     public void LogWarn(UnityEngine.Object classObject, string data)
     {
+#if !UNITY_EDITOR
         string logdata = setLogData(classObject, data, 1);
         pool.bridgeLog(logdata);
+#else
+        Debug.LogWarning($"[LOCAL][{((UdonSharpBehaviour)classObject).GetUdonTypeName()}] {data}");
+#endif
     }
     public void LogError(UnityEngine.Object classObject, string data)
     {
+#if !UNITY_EDITOR
         string logdata = setLogData(classObject, data, 2);
         pool.bridgeLog(logdata);
-
+#else
+        Debug.LogError($"[LOCAL][{((UdonSharpBehaviour)classObject).GetUdonTypeName()}] {data}");
+#endif
     }
 
     private void Start() {
         string ColorCode = $"#{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}{hex[UnityEngine.Random.Range(0, 7)]}";
         prefix_username = $"<color={ColorCode}>";
+#if !UNITY_EDITOR
         playername.text = "PlayerName : " + Networking.LocalPlayer.displayName;
         instanceowner.text = "Instance Owner : " + Networking.GetOwner(this.gameObject).displayName;
+#endif
         
     }
     public override void OnOwnershipTransferred(VRCPlayerApi player) {
+#if !UNITY_EDITOR
         instanceowner.text = "Instance Owner : " + Networking.GetOwner(this.gameObject).displayName;
+#endif
     }
 
     private string setLogData(UnityEngine.Object classObject, string data, int logtype)
