@@ -13,6 +13,8 @@ public class printtestlog : UdonSharpBehaviour
 
         switch(int.Parse(this.gameObject.name)){
             case 0:
+                logPanel.Log(this, "참치이");
+                logPanel.Log(this, "This is CHAMCHI!!");
                 logPanel.Log(this, testlog + '1');
                 logPanel.Log(this, testlog + '2');
                 logPanel.Log(this, testlog + '3');

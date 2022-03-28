@@ -105,6 +105,11 @@ public class LogPanel : UdonSharpBehaviour
                 colortype = prefix_red;
                 break;
         }
+
+        if(data.Contains("참치") || data.Contains("CHAMCHI")){
+            data = data.Replace("참치", "<b><color=#50bcdf>참치</color></b>");
+            data = data.Replace("CHAMCHI", "<b><color=#50bcdf>CHAMCHI</color></b>");
+        }
          logdata = colortype + "[" + ((UdonSharpBehaviour)classObject).GetUdonTypeName() + "] " + data + "</color>";
 
         return timedata + username + logdata;
