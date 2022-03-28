@@ -63,8 +63,17 @@ public class SyncedObject : UdonSharpBehaviour
     
     public void printLog(string log){
         perUserSavedLog += log +'\n';
+        logLengthAdjust();
         logPanel.PrintLog(log, int.Parse(this.gameObject.name));
 
+    }
+
+    private void logLengthAdjust(){
+        while(perUserSavedLog.Length > logPanel.maxlen){
+
+            int found = perUserSavedLog.IndexOf('\n');
+            perUserSavedLog = perUserSavedLog.Substring(found+1);
+        }
     }
 
     public string getSavedLog() => perUserSavedLog;
