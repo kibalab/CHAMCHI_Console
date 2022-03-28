@@ -114,12 +114,14 @@ public class LogPanel : UdonSharpBehaviour
     public void OnDropDownChanged() // Occurs when DropDown Item is changed. 드롭다운 항목이 변경될 때 발생합니다.
     {  
         if(dropDown.SelectedID == 1){
-         text.text = logAll;
+            text.text = logAll;
         }else if(dropDown.SelectedID == 0){
             text.text = pool.bridgeSavedLog(pool.myIndex);
         }else{
             text.text = pool.bridgeSavedLog(dropDown.getCurrentItemData());
         }
+        TextLengthAdjust();
+
     }
 
     public void PrintLog(string data, int syncedObjectIndex)
@@ -138,11 +140,19 @@ public class LogPanel : UdonSharpBehaviour
             }
         }
         logAll += data + '\n';
-        LengthAdjust();
+        logAllLengthAdjust();
+        TextLengthAdjust();
     }
 
 
-    public void LengthAdjust(){
+    public void logAllLengthAdjust(){
+        while(logAll.Length > maxlen){
+
+            int found = logAll.IndexOf('\n');
+            logAll = logAll.Substring(found+1);
+        }
+    }
+    public void TextLengthAdjust(){
         while(text.text.Length > maxlen){
 
             int found = text.text.IndexOf('\n');

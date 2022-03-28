@@ -60,7 +60,7 @@ using VRC.Udon;
                 }else if(VRCPlayerApi.GetPlayerById(idArr[i]) == Networking.LocalPlayer){
                     /* remote player */
                 }else{
-                    Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName;
+                    Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName+'.'+idArr[i].ToString();
                     Items[ItemCount].Data = i;
                     ItemCount++;
                 }
