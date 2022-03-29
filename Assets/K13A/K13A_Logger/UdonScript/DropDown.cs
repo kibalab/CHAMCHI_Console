@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using VRC.SDKBase;
 using VRC.Udon;
 
+namespace CHAMCHI.UI
+{
     public class DropDown : UdonSharpBehaviour
     {
         public bool isOpen = false;
@@ -45,34 +47,42 @@ using VRC.Udon;
             logPanel.OnDropDownChanged();
         }
 
-        public int getCurrentItemData(){
+        public int getCurrentItemData()
+        {
             return (int)Items[SelectedID].Data;
-            
+
         }
-        public void RefreshItem(int[] idArr){
+        public void RefreshItem(int[] idArr)
+        {
             ItemCount = 2;
 
-            for(int i = 0; i < idArr.Length; i++){
+            for (int i = 0; i < idArr.Length; i++)
+            {
                 /* player not exist */
-                if(idArr[i] == 0){
+                if (idArr[i] == 0)
+                {
                     continue;
                     /* local player */
-                }else if(VRCPlayerApi.GetPlayerById(idArr[i]) == Networking.LocalPlayer){
+                }
+                else if (VRCPlayerApi.GetPlayerById(idArr[i]) == Networking.LocalPlayer)
+                {
                     /* remote player */
-                }else{
-                    Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName+'.'+idArr[i].ToString();
+                }
+                else
+                {
+                    Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName + '.' + idArr[i].ToString();
                     Items[ItemCount].Data = i;
                     ItemCount++;
                 }
-            }          
+            }
 
 
-            UpdateItemSetList();  
+            UpdateItemSetList();
         }
 
         public void UpdateItemSetList()
         {
-            for(var i = 0; i < Items.Length; i++)
+            for (var i = 0; i < Items.Length; i++)
             {
                 Items[i].ItemID = i;
                 Items[i].isChecked = (Items[i].ItemID == SelectedID);
@@ -92,3 +102,4 @@ using VRC.Udon;
             return false;
         }
     }
+}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: PoolManager
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 6ae98b7f27d40564d87a74876eb0d0c0,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: bbc72918d6a03184aafaad2f61155a87,
     type: 2}
   udonAssembly: 
   assemblyError: 
@@ -133,7 +133,7 @@ MonoBehaviour:
       Data: 9|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: SyncedObject[], Assembly-CSharp
+      Data: CHAMCHI.Behaviour.SyncedObject[], Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -322,7 +322,7 @@ MonoBehaviour:
       Data: 21|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: DropDown, Assembly-CSharp
+      Data: CHAMCHI.UI.DropDown, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 

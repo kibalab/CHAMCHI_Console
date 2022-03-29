@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using VRC.SDKBase;
 using VRC.Udon;
 
+namespace CHAMCHI.UI
+{
     public class DropDownItem : UdonSharpBehaviour
     {
 
@@ -17,7 +19,7 @@ using VRC.Udon;
 
         private bool m_isCkecked = false;
         private object m_data;
-        
+
 
         public bool isChecked
         {
@@ -52,3 +54,4 @@ using VRC.Udon;
             Parents.ChangeSelected(ItemID);
         }
     }
+}

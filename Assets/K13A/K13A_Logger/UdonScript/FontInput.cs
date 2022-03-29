@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using VRC.SDKBase;
 using VRC.Udon;
 
-namespace K13A.KDebug
+namespace CHAMCHI.UI
 {
 #if UDON
     public class FontInput : UdonSharpBehaviour

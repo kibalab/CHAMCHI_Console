@@ -1,158 +1,170 @@
 
+using CHAMCHI.UI;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-public class PoolManager : UdonSharpBehaviour
+namespace CHAMCHI.Behaviour
 {
-    [UdonSynced(UdonSyncMode.None)] private int[] _idArr = new int[100];
 
-    public SyncedObject[] syncedObjectArr;
-    public int myIndex = -1;
-    public LogPanel logPanel;
-
-    public DropDown dropDown;
-
-
-
-    public override void OnPlayerJoined(VRCPlayerApi player)
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    public class PoolManager : UdonSharpBehaviour
     {
-        /* player join => allocateID to list */
-        /*************Owner Only**************/
-        
-        if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+        [UdonSynced(UdonSyncMode.None)] private int[] _idArr = new int[100];
+
+        public SyncedObject[] syncedObjectArr;
+        public int myIndex = -1;
+        public LogPanel logPanel;
+
+        public DropDown dropDown;
+
+
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
         {
-            return;
-        }
-        for (int i = 0; i < _idArr.Length; i++)
-        {
-            if (_idArr[i] == 0)
+            /* player join => allocateID to list */
+            /*************Owner Only**************/
+
+            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
             {
-                _idArr[i] = player.playerId;
-                break;
+                return;
             }
-        }
-        RequestSerialization();
-        SyncArr();
-
-        logPanel.LogError(this, "player joined! pool allocation success : " + player.displayName);
-    }
-
-    public override void OnPlayerLeft(VRCPlayerApi player)
-    {
-        /* player left => Deallocate from list */
-        /***************Owner Only**************/
-        if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
-            return;
-
-        for (int i = 0; i < _idArr.Length; i++)
-        {
-            if (_idArr[i] == 0)
+            for (int i = 0; i < _idArr.Length; i++)
             {
-                continue;
-            }
-            else if(VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
-            {
-                //logPanel.Log(this, "Remove " + _idArr[i].ToString() + " from the pool");
-                syncedObjectArr[i].resetOnPlayerExit(); 
-                _idArr[i] = 0;
-            }
-        }
-
-        RequestSerialization();
-        SyncArr();
-        logPanel.LogError(this, "player left! pool deallocation success : " + player.displayName);
-        
-    }
-
-    public override void OnDeserialization()
-    {
-        SyncArr();
-    }
-    public void SyncArr()
-    {  
-        dropDown.RefreshItem(_idArr);
-        
-        /*유저 나갈때마다 처리*/
-        ignoreFisrtLog();
-
-        /* 1회만 작동하면 됨*/
-        if (myIndex != -1)
-            return;
-        int myid = Networking.LocalPlayer.playerId;
-
-        /* pool 내에 할당되었는지 체크 */
-        for (int i = 0; i < _idArr.Length; i++)
-        {
-            if (_idArr[i] == Networking.LocalPlayer.playerId)
-            {
-                myIndex = i;
-                break;
-            }
-        }
-
-        /* 할당안되었으면 무시*/
-        /* join직후 받아오는 _idArr에는 아직 동기화 안되어있을 수 있음 */
-        if (myIndex == -1)
-            return;
-
-
-        syncedObjectArr[myIndex].getOwner(); // KIBA : 왜 GetOwner에요...?
-
-        
-    }
-
-
-    /* 미할당된 오브젝트는 isFirstLog = false */
-    /* 입장시 모두 true로 기존 유저들 첫 로그 무시 */
-    public void ignoreFisrtLog(){
-        for(int i = 0; i < _idArr.Length; i++){
-            if(_idArr[i] == 0){
-                /*array out of bound*/
-                /*현재 개수 안맞음 나중에맞출것 */
-                if(i >= syncedObjectArr.Length){
+                if (_idArr[i] == 0)
+                {
+                    _idArr[i] = player.playerId;
                     break;
                 }
-                syncedObjectArr[i].setIsFirstSync(false);
+            }
+            RequestSerialization();
+            SyncArr();
+
+            logPanel.LogError(this, "player joined! pool allocation success : " + player.displayName);
+        }
+
+        public override void OnPlayerLeft(VRCPlayerApi player)
+        {
+            /* player left => Deallocate from list */
+            /***************Owner Only**************/
+            if (!Networking.IsOwner(Networking.LocalPlayer, this.gameObject))
+                return;
+
+            for (int i = 0; i < _idArr.Length; i++)
+            {
+                if (_idArr[i] == 0)
+                {
+                    continue;
+                }
+                else if (VRCPlayerApi.GetPlayerById(_idArr[i]) == null)
+                {
+                    //logPanel.Log(this, "Remove " + _idArr[i].ToString() + " from the pool");
+                    syncedObjectArr[i].resetOnPlayerExit();
+                    _idArr[i] = 0;
+                }
+            }
+
+            RequestSerialization();
+            SyncArr();
+            logPanel.LogError(this, "player left! pool deallocation success : " + player.displayName);
+
+        }
+
+        public override void OnDeserialization()
+        {
+            SyncArr();
+        }
+        public void SyncArr()
+        {
+            dropDown.RefreshItem(_idArr);
+
+            /*유저 나갈때마다 처리*/
+            ignoreFisrtLog();
+
+            /* 1회만 작동하면 됨*/
+            if (myIndex != -1)
+                return;
+            int myid = Networking.LocalPlayer.playerId;
+
+            /* pool 내에 할당되었는지 체크 */
+            for (int i = 0; i < _idArr.Length; i++)
+            {
+                if (_idArr[i] == Networking.LocalPlayer.playerId)
+                {
+                    myIndex = i;
+                    break;
+                }
+            }
+
+            /* 할당안되었으면 무시*/
+            /* join직후 받아오는 _idArr에는 아직 동기화 안되어있을 수 있음 */
+            if (myIndex == -1)
+                return;
+
+
+            syncedObjectArr[myIndex].getOwner(); // KIBA : 왜 GetOwner에요...?
+
+
+        }
+
+
+        /* 미할당된 오브젝트는 isFirstLog = false */
+        /* 입장시 모두 true로 기존 유저들 첫 로그 무시 */
+        public void ignoreFisrtLog()
+        {
+            for (int i = 0; i < _idArr.Length; i++)
+            {
+                if (_idArr[i] == 0)
+                {
+                    /*array out of bound*/
+                    /*현재 개수 안맞음 나중에맞출것 */
+                    if (i >= syncedObjectArr.Length)
+                    {
+                        break;
+                    }
+                    syncedObjectArr[i].setIsFirstSync(false);
+                }
             }
         }
-    }
 
 
 
-      /* this is for debug*/
-    public void getStatus()
-    {
-        string tmp = "";
-
-        for (int i = 0; i < 20; i++)
+        /* this is for debug*/
+        public void getStatus()
         {
-            tmp += _idArr[i].ToString();
+            string tmp = "";
+
+            for (int i = 0; i < 20; i++)
+            {
+                tmp += _idArr[i].ToString();
+            }
+            logPanel.Log(this, tmp);
         }
-        logPanel.Log(this, tmp);
-    }
 
 
 
 
-    /* LogPanel과 SyncedObject 연결용 */
-    public void bridgeLog(string data)
-    {
-        /* pool not registered */
-        if (myIndex == -1)
-            return;
-        syncedObjectArr[myIndex].sendLog(data);
-    }
+        /* LogPanel과 SyncedObject 연결용 */
+        public void bridgeLog(string data)
+        {
+            /* pool not registered */
+            if (myIndex == -1)
+                return;
+            syncedObjectArr[myIndex].sendLog(data);
+        }
 
-    public string bridgeSavedLog(int index) => syncedObjectArr[index].getSavedLog();
+        public string bridgeSavedLog(int index) => syncedObjectArr[index].getSavedLog();
 
-    public void bridgeResetLog(int index) => syncedObjectArr[index].resetSavedLog();
+        public void bridgeResetLog(int index) => syncedObjectArr[index].resetSavedLog();
 
-    public void bridgeResetLogAll(){
-        for(int i = 0; i < syncedObjectArr.Length; i++){
-            syncedObjectArr[i].resetSavedLog();
+        public void bridgeResetLogAll()
+        {
+            for (int i = 0; i < syncedObjectArr.Length; i++)
+            {
+                syncedObjectArr[i].resetSavedLog();
+
+            }
 
         }
 
