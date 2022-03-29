@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: printtestlog Udon C# Program Asset
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 8f8ad675ae663c745b5fa677801ad1f5,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 067816f9b4342854493caa9d4d3fba4d,
     type: 2}
   udonAssembly: 
   assemblyError: 
@@ -189,7 +189,7 @@ MonoBehaviour:
       Data: 12|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: PoolManager, Assembly-CSharp
+      Data: CHAMCHI.Behaviour.PoolManager, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 

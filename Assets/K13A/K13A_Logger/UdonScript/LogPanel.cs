@@ -5,6 +5,8 @@ using VRC.SDKBase;
 using VRC.Udon;
 using UnityEngine.UI;
 using System;
+using CHAMCHI.Behaviour;
+using CHAMCHI.UI;
 
 public class LogPanel : UdonSharpBehaviour
 {
@@ -13,6 +15,8 @@ public class LogPanel : UdonSharpBehaviour
     public Text playername;
     public Text instanceowner;
     public int maxlen;
+
+    public bool OnChamchi = true;
 
     public string prefix_red = "<color=red>";
     public string prefix_white = "<color=white>";
@@ -106,7 +110,7 @@ public class LogPanel : UdonSharpBehaviour
                 break;
         }
 
-        if(data.Contains("참치") || data.Contains("CHAMCHI")){
+        if(OnChamchi && (data.Contains("참치") || data.Contains("CHAMCHI"))){
             data = data.Replace("참치", "<b><color=#50bcdf>참치</color></b>");
             data = data.Replace("CHAMCHI", "<b><color=#50bcdf>CHAMCHI</color></b>");
         }
