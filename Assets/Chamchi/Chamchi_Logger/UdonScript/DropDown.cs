@@ -70,6 +70,9 @@ namespace CHAMCHI.UI
                 }
                 else
                 {
+                    if(VRCPlayerApi.GetPlayerById(idArr[i])==null){
+                        continue;
+                    }
                     Items[ItemCount].Title = VRCPlayerApi.GetPlayerById(idArr[i]).displayName + '.' + idArr[i].ToString();
                     Items[ItemCount].Data = i;
                     ItemCount++;
