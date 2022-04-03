@@ -72,22 +72,27 @@ namespace CHAMCHI.BehaviourEditor
             };
 
             list.drawHeaderCallback = (rect) =>
-                         EditorGUI.LabelField(rect, "Auto Setted Variables");
+                         EditorGUI.LabelField(rect, "Updated Variables");
 
+        }
+
+        static IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
+        {
+            System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
+            return (IUdonVariable)Activator.CreateInstance(udonVariableType, symbolName, value);
         }
 
         public void UpdateIncludeScripts()
         {
+            UdonSharpProgramAsset.CompileAllCsPrograms(true);
+
             var roots = SceneManager.GetActiveScene().GetRootGameObjects();
 
-            IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
-            {
-                System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
-                return (IUdonVariable)Activator.CreateInstance(udonVariableType, symbolName, value);
-            }
+            var selfUdonBehaviour = UdonSharpEditorUtility.GetBackingUdonBehaviour((UdonSharpBehaviour)target);
 
             AutoSettedBehaviours.Clear();
             AutoSettedSymbols.Clear();
+
 
             foreach (var root in roots)
             {
@@ -103,34 +108,65 @@ namespace CHAMCHI.BehaviourEditor
                         if (variable.FieldType == typeof(LogPanel))
                         {
                             debugVar = variable;
-                            //debugVar.SetValue(behaviour, target);
                             var udon = behaviour.GetComponent<UdonBehaviour>();
 
-                            ((UdonSharpProgramAsset)udon.programSource).CompileCsProgram();
+                            ((UdonSharpProgramAsset)udon.programSource).UpdateProgram();
 
-                            bool isContain = false;
-                            foreach (var symbol in udon.publicVariables.VariableSymbols)
+
+                            Undo.RecordObject(udon, "Modify variable");
+                            if (!udon.publicVariables.TrySetVariableValue(variable.Name, selfUdonBehaviour))
                             {
-                                if (symbol.Equals(debugVar.Name))
+                                var symbolTable = GetSymbolTable(udon);
+                                var symbolType = symbolTable.GetSymbolType(variable.Name);
+                                if (!udon.publicVariables.TryAddVariable(CreateUdonVariable(variable.Name, selfUdonBehaviour,
+                                    symbolType)))
                                 {
-                                    udon.publicVariables.TrySetVariableValue(symbol, (LogPanel)target);
-                                    Debug.Log($"Setted {behaviour.gameObject.name}/{debugVar}");
-                                    isContain = true;
+                                    Debug.LogError($"Failed to set public variable '{variable.Name}' value");
+                                    AutoSettedBehaviours.Add(behaviour);
+                                    AutoSettedSymbols.Add(debugVar.Name + "_NOTSETTED");
+                                }
+                                else
+                                {
+                                    AutoSettedBehaviours.Add(behaviour);
+                                    AutoSettedSymbols.Add(debugVar.Name);
                                 }
                             }
-                            if (!isContain)
-                            {
-                                udon.publicVariables.TryAddVariable(CreateUdonVariable(debugVar.Name, target, typeof(LogPanel)));
-                                Debug.Log($"Added {behaviour.gameObject.name}/{debugVar}");
-                            }
-                            AutoSettedBehaviours.Add(behaviour);
-                            AutoSettedSymbols.Add(debugVar.Name);
-
-                            //behaviour.SetProgramVariable(debugVar.Name, (UdonSharpBehaviour)target);
+                            udon.SetProgramVariable(variable.Name, target);
                         }
+                    }
+
+                    GUI.changed = true;
+
+                    if (PrefabUtility.IsPartOfPrefabInstance(behaviour))
+                    {
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
                     }
                 }
             }
+        }
+
+        IUdonSymbolTable GetSymbolTable(UdonBehaviour udonBehaviour)
+        {
+            if (!udonBehaviour || !(udonBehaviour.programSource is UdonSharpProgramAsset))
+            {
+                throw new Exception("ProgramSource is not an UdonSharpProgramAsset");
+            }
+
+            var programAsset = (UdonSharpProgramAsset)udonBehaviour.programSource;
+            if (!programAsset)
+            {
+                throw new Exception("UdonBehaviour has no UdonSharpProgramAsset");
+            }
+
+            programAsset.UpdateProgram();
+
+            var program = programAsset.GetRealProgram();
+            if (program?.SymbolTable == null)
+            {
+                throw new Exception("UdonBehaviour has no public variables");
+            }
+
+            return program.SymbolTable;
         }
 
         public void UpdateSystemColor()
@@ -252,7 +288,7 @@ namespace CHAMCHI.BehaviourEditor
                                             : $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know CHAMCHI, 참치?</color>") +
                                        $"</size></b>", GUI.skin.label);
 
-            m_onChamchi.boolValue = EditorGUILayout.Toggle(m_onChamchi.boolValue);
+            m_onChamchi.boolValue = EditorGUILayout.ToggleLeft("Toggle Highlight", m_onChamchi.boolValue);
             EditorGUILayout.EndHorizontal();
 
             GUI.skin.label.font = origin_font;
@@ -294,7 +330,7 @@ namespace CHAMCHI.BehaviourEditor
 
                 GUILayout.Space(10);
 
-                list.DoLayoutList();
+                if(AutoSettedBehaviours.Count > 0) list.DoLayoutList();
 
             }
 

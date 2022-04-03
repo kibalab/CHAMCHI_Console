@@ -1047,7 +1047,7 @@ namespace UdonSharpEditor
             return value;
         }
 
-        private static object DrawPublicVariableField(UdonBehaviour currentBehaviour, UdonSharpProgramAsset programAsset, string symbol, object variableValue, Type variableType, ref bool dirty, bool enabled)
+        public static object DrawPublicVariableField(UdonBehaviour currentBehaviour, UdonSharpProgramAsset programAsset, string symbol, object variableValue, Type variableType, ref bool dirty, bool enabled)
         {
             bool shouldUseRuntimeValue = EditorApplication.isPlaying && currentBehaviour != null && GUI.enabled; // GUI.enabled is determined in DrawProgramSourceGUI
 
