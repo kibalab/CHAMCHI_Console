@@ -12,6 +12,7 @@ namespace UdonSharp.Examples.Tutorials
     [AddComponentMenu("Udon Sharp/Tutorials/Spinning Cubes 1")]
     public class SpinningCubes_1 : UdonSharpBehaviour 
     {
+        public LogPanel LogPanel;
         private void Update()
         {
             transform.Rotate(Vector3.up, 1f);
