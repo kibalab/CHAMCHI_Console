@@ -36,6 +36,7 @@ public class LogPanel : UdonSharpBehaviour
     #if UNITY_EDITOR
     public bool m_AutoSet;
     public bool m_foldAdvanced;
+    public Texture2D Title;
     #endif
     #endregion
 

@@ -96,7 +96,7 @@ namespace CHAMCHI.BehaviourEditor
 
             foreach (var root in roots)
             {
-                var behaviours = root.GetComponentsInChildren<UdonSharpBehaviour>();
+                var behaviours = root.GetComponentsInChildren<UdonSharpBehaviour>(true);
                 foreach (var behaviour in behaviours)
                 {
                     var type = behaviour.GetType();
@@ -208,6 +208,7 @@ namespace CHAMCHI.BehaviourEditor
 
             serializedObject.Update();
 
+            GUILayout.Box(((LogPanel)target).Title, GUILayout.ExpandWidth(true), GUILayout.Height(100));
 
             if (m_maxlen.intValue > 30000)
                 EditorGUILayout.HelpBox("Values above 3,0000 may cause rendering problems for continuous output.", MessageType.Warning);

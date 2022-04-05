@@ -4,11 +4,16 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-public class te : UdonSharpBehaviour
+public class TestClass : UdonSharpBehaviour
 {
-    public LogPanel panel;
+    public LogPanel Debug;
+    
     void Start()
     {
-        
+        Debug.Log(this, "Hello, World!");
+
+        Debug.LogWarn(this, "Warning!!");
+
+        Debug.LogError(this, "Udon Error!!");
     }
 }
