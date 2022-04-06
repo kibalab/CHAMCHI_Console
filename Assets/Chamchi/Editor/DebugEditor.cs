@@ -210,10 +210,12 @@ namespace CHAMCHI.BehaviourEditor
 
             GUILayout.Box(((LogPanel)target).Title, GUILayout.ExpandWidth(true), GUILayout.Height(100));
 
+            GUILayout.Space(20);
+
             if (m_maxlen.intValue > 30000)
                 EditorGUILayout.HelpBox("Values above 3,0000 may cause rendering problems for continuous output.", MessageType.Warning);
             else
-                GUILayout.Space(42);
+                GUILayout.Space(40);
 
 
             EditorGUILayout.LabelField("<b>[Message]</b>", GUI.skin.label);
