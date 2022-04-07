@@ -17,6 +17,12 @@ namespace CHAMCHI.BehaviourEditor
         {
             EditorGUILayout.LabelField("", GUI.skin.window, GUILayout.Height(20), GUILayout.MaxWidth(GUI.skin.window.CalcSize(new GUIContent($"    {Title}    ")).x));
             EditorGUI.LabelField(GUILayoutUtility.GetLastRect(), $"    <b>{Title}</b>", GUI.skin.label);
+            GUI.Box(new Rect(
+                GUILayoutUtility.GetLastRect().x + GUILayoutUtility.GetLastRect().width + 20, 
+                GUILayoutUtility.GetLastRect().y + GUILayoutUtility.GetLastRect().height / 2, 
+                 EditorGUIUtility.currentViewWidth - GUILayoutUtility.GetLastRect().x - GUILayoutUtility.GetLastRect().width - 40, 
+                2), 
+                "");
             GUILayout.Space(5);
         }
         
@@ -32,16 +38,21 @@ namespace CHAMCHI.BehaviourEditor
         public static void MenuBox(string Title, Action contant, ContentStyle style)
         {
             var origin_font = GUI.skin.label.font;
-            DrawTitle(Title);
-            GUI.skin.label.font = style.font;
             
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
-                EditorGUILayout.Space(10);
-                EditorGUILayout.BeginVertical();
-                    contant.Invoke();
-                    GUILayout.Space(5);
-                EditorGUILayout.EndVertical();
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginVertical();
+                DrawTitle(Title);
+                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                    GUI.skin.label.font = style.font;
+                    EditorGUILayout.Space(10);
+                    EditorGUILayout.BeginVertical();
+                        EditorGUILayout.Space(5);
+                        contant.Invoke();
+                        GUILayout.Space(5);
+                    EditorGUILayout.EndVertical();
+                EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+            
+            EditorGUILayout.Space(5);
             
             GUI.skin.label.font = origin_font;
         }
@@ -72,9 +83,10 @@ namespace CHAMCHI.BehaviourEditor
             
             GUI.skin.label.font = style.font;
             
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                 EditorGUILayout.Space(10);
                 EditorGUILayout.BeginVertical();
+                    EditorGUILayout.Space(5);
                     contant.Invoke();
                     GUILayout.Space(5);
                 EditorGUILayout.EndVertical();
@@ -82,13 +94,14 @@ namespace CHAMCHI.BehaviourEditor
             
             GUI.skin.label.font = origin_font;
             
+            EditorGUILayout.Space(5);
+            
             return b;
         }
-        
-        public static void MenuBox(string Title, Action contant)
+
+        public static float Slider(float value)
         {
-            DrawTitle(Title);
-            contant.Invoke();
+            return 0;
         }
     }
 }

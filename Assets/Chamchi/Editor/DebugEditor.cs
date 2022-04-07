@@ -98,16 +98,13 @@ namespace CHAMCHI.BehaviourEditor
                 {
                     base.OnInspectorGUI();
                 }, new ContentStyle(GUI.skin.label.font));
-                EditorUtil.MenuBox("Editor", () =>
-                {
-                    EditorGUILayout.BeginVertical(GUI.skin.box);
-                    EditorUtil.DrawSubTitle("Editor");
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField("Show Base Inspector");
-                    showBase = EditorGUILayout.Toggle(showBase);
-                    EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.EndVertical();
-                }, new ContentStyle(GUI.skin.label.font));
+                
+                GUILayout.Space(20);
+                EditorUtil.DrawSubTitle("Editor");
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Show Base Inspector");
+                showBase = EditorGUILayout.Toggle(showBase);
+                EditorGUILayout.EndHorizontal();
                 return;
 
             }
@@ -147,62 +144,68 @@ namespace CHAMCHI.BehaviourEditor
             
             EditorUtil.MenuBox("Style", () =>
             {
-                var inspectorWidth = EditorGUIUtility.currentViewWidth;
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"<b><size=15>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                           $" | " +
-                                           $"<color=grey>[System] </color>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Hello, KIBA!</color>" +
-                                           $"</size></b>", GUI.skin.label);
-                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
-                White = EditorGUILayout.ColorField(White, GUILayout.MaxWidth(100));
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"<b><size=15>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                           $" | " +
-                                           $"<color=grey>[System] </color>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>Hello, Iris!</color>" +
-                                           $"</size></b>", GUI.skin.label);
-                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
-                Yellow = EditorGUILayout.ColorField(Yellow, GUILayout.MaxWidth(100));
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"<b><size=15>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                           $" | " +
-                                           $"<color=grey>[System] </color>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>Hello, Udon!</color>" +
-                                           $"</size></b>", GUI.skin.label);
-                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
-                Red = EditorGUILayout.ColorField(Red, GUILayout.MaxWidth(100));
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                Green = EditorGUILayout.ColorField(Green, GUILayout.Width(110));
-                if (GUILayout.Button("Save System Color"))
+                EditorUtil.SubMenuBox("Color", () =>
                 {
-                    UpdateSystemColor();
-                }
-                EditorGUILayout.EndHorizontal();
+                    var inspectorWidth = EditorGUIUtility.currentViewWidth;
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"<b><size=15>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                               $" | " +
+                                               $"<color=grey>[System] </color>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Hello, KIBA!</color>" +
+                                               $"</size></b>", GUI.skin.label);
+                    if(inspectorWidth > 600) GUILayout.FlexibleSpace();
+                    White = EditorGUILayout.ColorField(White, GUILayout.MaxWidth(100));
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"<b><size=15>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                               $" | " +
+                                               $"<color=grey>[System] </color>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>Hello, Iris!</color>" +
+                                               $"</size></b>", GUI.skin.label);
+                    if(inspectorWidth > 600) GUILayout.FlexibleSpace();
+                    Yellow = EditorGUILayout.ColorField(Yellow, GUILayout.MaxWidth(100));
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"<b><size=15>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                               $" | " +
+                                               $"<color=grey>[System] </color>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>Hello, Udon!</color>" +
+                                               $"</size></b>", GUI.skin.label);
+                    if(inspectorWidth > 600) GUILayout.FlexibleSpace();
+                    Red = EditorGUILayout.ColorField(Red, GUILayout.MaxWidth(100));
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    Green = EditorGUILayout.ColorField(Green, GUILayout.Width(110));
+                    if (GUILayout.Button("Save System Color"))
+                    {
+                        UpdateSystemColor();
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }, new ContentStyle(behaviour.text.font));
 
                 GUILayout.Space(10);
 
                 if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
 
-                EditorGUILayout.LabelField("<b>[Name Highlight]</b>", GUI.skin.label);
-                EditorGUILayout.BeginHorizontal(GUI.skin.box);
-                EditorGUILayout.LabelField($"<b><size=15>" +
-                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                           $" | " +
-                                           $"<color=grey>[System] </color>" +
-                                                (m_onChamchi.boolValue ? $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know <b><color=#50bcdf>CHAMCHI</color></b>, <b><color=#50bcdf>참치</color></b>?</color>"
-                                                : $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know CHAMCHI, 참치?</color>") +
-                                           $"</size></b>", GUI.skin.label);
+                EditorUtil.SubMenuBox("Highlight", () =>
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"<b><size=15>" +
+                                               $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                               $" | " +
+                                               $"<color=grey>[System] </color>" +
+                                               (m_onChamchi.boolValue ? $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know <b><color=#50bcdf>CHAMCHI</color></b>, <b><color=#50bcdf>참치</color></b>?</color>"
+                                                   : $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know CHAMCHI, 참치?</color>") +
+                                               $"</size></b>", GUI.skin.label);
 
-                m_onChamchi.boolValue = EditorGUILayout.ToggleLeft("Toggle Highlight", m_onChamchi.boolValue);
-                EditorGUILayout.EndHorizontal();
+                    m_onChamchi.boolValue = EditorGUILayout.ToggleLeft("Toggle Highlight", m_onChamchi.boolValue);
+                    EditorGUILayout.EndHorizontal();
+                }, new ContentStyle(behaviour.text.font));
+                
 
             }, new ContentStyle(behaviour.text.font));
             
@@ -240,16 +243,12 @@ namespace CHAMCHI.BehaviourEditor
                 if(BehaviourAutoSetter.GetSettedBehaviours.Count > 0) list.DoLayoutList();
             }, new ContentStyle(behaviour.text.font));
 
-            EditorUtil.MenuBox("Editor", () =>
-            {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorUtil.DrawSubTitle("Editor");
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Show Base Inspector");
-                showBase = EditorGUILayout.Toggle(showBase);
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.EndVertical();
-            }, new ContentStyle(behaviour.text.font));
+            GUILayout.Space(20);
+            EditorUtil.DrawSubTitle("Editor");
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Show Base Inspector");
+            showBase = EditorGUILayout.Toggle(showBase);
+            EditorGUILayout.EndHorizontal();
             
             
 
