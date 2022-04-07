@@ -13,6 +13,9 @@ using Object = UnityEngine.Object;
 
 namespace CHAMCHI.BehaviourEditor
 {
+    /*
+     * USB : UdonSharpBehaviour
+     */
 
     public class BehaviourAutoSetter
     {
@@ -37,6 +40,8 @@ namespace CHAMCHI.BehaviourEditor
 
         #endregion
 
+        #region MainFunctions
+
         public bool Run(Object target)
         {
             try
@@ -51,9 +56,9 @@ namespace CHAMCHI.BehaviourEditor
                 return false;
             }
         }
-
-        #region Utility
-
+        
+        public void Compile() => UdonSharpProgramAsset.CompileAllCsPrograms(true);
+        
         public void AutoSet(Object target)
         {
             var selfUdonBehaviour = UdonSharpEditorUtility.GetBackingUdonBehaviour((UdonSharpBehaviour) target);
@@ -61,56 +66,30 @@ namespace CHAMCHI.BehaviourEditor
             AutoSettedBehaviours.Clear();
             AutoSettedSymbols.Clear();
 
-            var behaviours = GetAllBehaviours();
+            var behaviours = GetAllUSB(true);
 
             foreach (var behaviour in behaviours)
             {
-                var type = behaviour.GetType();
-                FieldInfo[] variables = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var variables = GetUSBPublicFields(behaviour);
 
-                FieldInfo debugVar = null;
+                bool isChanged = false;
                 foreach (var variable in variables)
                 {
                     if (variable.FieldType == typeof(LogPanel))
                     {
-                        debugVar = variable;
-                        var udon = behaviour.GetComponent<UdonBehaviour>();
-
-                        ((UdonSharpProgramAsset) udon.programSource).UpdateProgram();
-
-
-                        Undo.RecordObject(udon, "Modify variable");
-                        if (!udon.publicVariables.TrySetVariableValue(variable.Name, selfUdonBehaviour))
-                        {
-                            var symbolTable = GetSymbolTable(udon);
-                            var symbolType = symbolTable.GetSymbolType(variable.Name);
-                            if (!udon.publicVariables.TryAddVariable(CreateUdonVariable(variable.Name,
-                                    selfUdonBehaviour,
-                                    symbolType)))
-                            {
-                                Debug.LogError($"Failed to set public variable '{variable.Name}' value");
-                                AutoSettedBehaviours.Add(behaviour);
-                                AutoSettedSymbols.Add(debugVar.Name + "_NOTSETTED");
-                            }
-                            else
-                            {
-                                AutoSettedBehaviours.Add(behaviour);
-                                AutoSettedSymbols.Add(debugVar.Name);
-                            }
-                        }
-
-                        udon.SetProgramVariable(variable.Name, target);
+                        isChanged = SetVariableValue(behaviour, variable, selfUdonBehaviour) || isChanged;
                     }
                 }
 
-                GUI.changed = true;
+                GUI.changed = isChanged;
 
-                if (PrefabUtility.IsPartOfPrefabInstance(behaviour))
-                {
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
-                }
+                if(isChanged) SaveChangedUSBPrefab(behaviour);
             }
         }
+        
+        #endregion
+
+        #region Utility
 
         static IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
         {
@@ -143,21 +122,61 @@ namespace CHAMCHI.BehaviourEditor
             return program.SymbolTable;
         }
 
-        public List<UdonSharpBehaviour> GetAllBehaviours()
+        public List<UdonSharpBehaviour> GetAllUSB(bool includeInacitve)
         {
             var behaviours = new List<UdonSharpBehaviour>();
             var roots = SceneManager.GetActiveScene().GetRootGameObjects();
             foreach (var root in roots)
             {
-                behaviours.AddRange(root.GetComponentsInChildren<UdonSharpBehaviour>(true));
+                behaviours.AddRange(root.GetComponentsInChildren<UdonSharpBehaviour>(includeInacitve));
             }
 
             return behaviours;
         }
 
-        public void Compile()
+        public FieldInfo[] GetUSBPublicFields(UdonSharpBehaviour behaviour)
         {
-            UdonSharpProgramAsset.CompileAllCsPrograms(true);
+            var type = behaviour.GetType();
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        public bool SetVariableValue(UdonSharpBehaviour behaviour, FieldInfo field, object value)
+        {
+            var udon = behaviour.GetComponent<UdonBehaviour>();
+
+            ((UdonSharpProgramAsset) udon.programSource).UpdateProgram();
+
+
+            Undo.RecordObject(udon, "Modify variable");
+            if (!udon.publicVariables.TrySetVariableValue(field.Name, value))
+            {
+                var symbolTable = GetSymbolTable(udon);
+                var symbolType = symbolTable.GetSymbolType(field.Name);
+                if (!udon.publicVariables.TryAddVariable(CreateUdonVariable(field.Name,
+                        value,
+                        symbolType)))
+                {
+                    Debug.LogError($"Failed to set public variable '{field.Name}' value");
+                    AutoSettedBehaviours.Add(behaviour);
+                    AutoSettedSymbols.Add(field.Name + "_NOTSETTED");
+                }
+                else
+                {
+                    AutoSettedBehaviours.Add(behaviour);
+                    AutoSettedSymbols.Add(field.Name);
+                }
+            }
+
+            udon.SetProgramVariable(field.Name, value);
+            return true;
+        }
+
+        public void SaveChangedUSBPrefab(UdonSharpBehaviour behaviour)
+        {
+            if (PrefabUtility.IsPartOfPrefabInstance(behaviour))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
+            }
         }
 
         #endregion
