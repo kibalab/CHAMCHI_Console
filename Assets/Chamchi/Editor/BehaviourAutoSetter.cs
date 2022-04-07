@@ -1,99 +1,165 @@
-namespace CHAMCHI.BehaviourEditor;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using UdonSharp;
+using UdonSharpEditor;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using VRC.Udon;
+using VRC.Udon.Common;
+using VRC.Udon.Common.Interfaces;
+using Object = UnityEngine.Object;
 
-public class BehaviourAutoSetter
+namespace CHAMCHI.BehaviourEditor
 {
-    #region Field
 
-    List<UdonSharpBehaviour> AutoSettedBehaviours = new List<UdonSharpBehaviour>();
-    List<string> AutoSettedSymbols = new List<string>();
-    
-    #endregion
-    
-    public void Run()
+    public class BehaviourAutoSetter
     {
-        AutoSet();
-    }
+        #region Field
 
-    #region Utility
+        List<UdonSharpBehaviour> AutoSettedBehaviours = new List<UdonSharpBehaviour>();
+        List<string> AutoSettedSymbols = new List<string>();
 
-    public void AutoSet()
-    {
-        Compile();
+        #endregion
 
-        var selfUdonBehaviour = UdonSharpEditorUtility.GetBackingUdonBehaviour((UdonSharpBehaviour)target);
+        #region Properties
 
-        AutoSettedBehaviours.Clear();
-        AutoSettedSymbols.Clear();
-
-        var behaviours = GetAllBehaviours();
-
-        foreach (var behaviour in behaviours)
+        public List<UdonSharpBehaviour> GetSettedBehaviours
         {
-            var type = behaviour.GetType();
-            FieldInfo[] variables = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            get => AutoSettedBehaviours;
+        }
 
-            FieldInfo debugVar = null;
-            foreach (var variable in variables)
+        public List<string> GetSettedSymbols
+        {
+            get => AutoSettedSymbols;
+        }
+
+        #endregion
+
+        public bool Run(Object target)
+        {
+            try
             {
-                if (variable.FieldType == typeof(LogPanel))
+                Compile();
+                AutoSet(target);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                return false;
+            }
+        }
+
+        #region Utility
+
+        public void AutoSet(Object target)
+        {
+            var selfUdonBehaviour = UdonSharpEditorUtility.GetBackingUdonBehaviour((UdonSharpBehaviour) target);
+
+            AutoSettedBehaviours.Clear();
+            AutoSettedSymbols.Clear();
+
+            var behaviours = GetAllBehaviours();
+
+            foreach (var behaviour in behaviours)
+            {
+                var type = behaviour.GetType();
+                FieldInfo[] variables = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+                FieldInfo debugVar = null;
+                foreach (var variable in variables)
                 {
-                    debugVar = variable;
-                    var udon = behaviour.GetComponent<UdonBehaviour>();
-
-                    ((UdonSharpProgramAsset)udon.programSource).UpdateProgram();
-
-
-                    Undo.RecordObject(udon, "Modify variable");
-                    if (!udon.publicVariables.TrySetVariableValue(variable.Name, selfUdonBehaviour))
+                    if (variable.FieldType == typeof(LogPanel))
                     {
-                        var symbolTable = GetSymbolTable(udon);
-                        var symbolType = symbolTable.GetSymbolType(variable.Name);
-                        if (!udon.publicVariables.TryAddVariable(CreateUdonVariable(variable.Name, selfUdonBehaviour,
-                            symbolType)))
+                        debugVar = variable;
+                        var udon = behaviour.GetComponent<UdonBehaviour>();
+
+                        ((UdonSharpProgramAsset) udon.programSource).UpdateProgram();
+
+
+                        Undo.RecordObject(udon, "Modify variable");
+                        if (!udon.publicVariables.TrySetVariableValue(variable.Name, selfUdonBehaviour))
                         {
-                            Debug.LogError($"Failed to set public variable '{variable.Name}' value");
-                            AutoSettedBehaviours.Add(behaviour);
-                            AutoSettedSymbols.Add(debugVar.Name + "_NOTSETTED");
+                            var symbolTable = GetSymbolTable(udon);
+                            var symbolType = symbolTable.GetSymbolType(variable.Name);
+                            if (!udon.publicVariables.TryAddVariable(CreateUdonVariable(variable.Name,
+                                    selfUdonBehaviour,
+                                    symbolType)))
+                            {
+                                Debug.LogError($"Failed to set public variable '{variable.Name}' value");
+                                AutoSettedBehaviours.Add(behaviour);
+                                AutoSettedSymbols.Add(debugVar.Name + "_NOTSETTED");
+                            }
+                            else
+                            {
+                                AutoSettedBehaviours.Add(behaviour);
+                                AutoSettedSymbols.Add(debugVar.Name);
+                            }
                         }
-                        else
-                        {
-                            AutoSettedBehaviours.Add(behaviour);
-                            AutoSettedSymbols.Add(debugVar.Name);
-                        }
+
+                        udon.SetProgramVariable(variable.Name, target);
                     }
-                    udon.SetProgramVariable(variable.Name, target);
+                }
+
+                GUI.changed = true;
+
+                if (PrefabUtility.IsPartOfPrefabInstance(behaviour))
+                {
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
                 }
             }
-
-            GUI.changed = true;
-
-            if (PrefabUtility.IsPartOfPrefabInstance(behaviour))
-            {
-                PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
-            }
         }
-    }
 
-    public List<UdonSharpBehaviour> GetAllBehaviours()
-    {
-        var behaviours = List<UdonSharpBehaviour>(); 
-        var roots = SceneManager.GetActiveScene().GetRootGameObjects();
-        foreach (var root in roots)
+        static IUdonVariable CreateUdonVariable(string symbolName, object value, System.Type type)
         {
-            behaviours.AddRange(root.GetComponentsInChildren<UdonSharpBehaviour>(true));
+            System.Type udonVariableType = typeof(UdonVariable<>).MakeGenericType(type);
+            return (IUdonVariable) Activator.CreateInstance(udonVariableType, symbolName, value);
         }
 
-        return behaviours;
-    }
+        IUdonSymbolTable GetSymbolTable(UdonBehaviour udonBehaviour)
+        {
 
-    public void Compile(UdonSharpBehaviour behaviour)
-    {
+            if (!udonBehaviour || !(udonBehaviour.programSource is UdonSharpProgramAsset))
+            {
+                throw new Exception("ProgramSource is not an UdonSharpProgramAsset");
+            }
+
+            var programAsset = (UdonSharpProgramAsset) udonBehaviour.programSource;
+            if (!programAsset)
+            {
+                throw new Exception("UdonBehaviour has no UdonSharpProgramAsset");
+            }
+
+            programAsset.UpdateProgram();
+
+            var program = programAsset.GetRealProgram();
+            if (program?.SymbolTable == null)
+            {
+                throw new Exception("UdonBehaviour has no public variables");
+            }
+
+            return program.SymbolTable;
+        }
+
+        public List<UdonSharpBehaviour> GetAllBehaviours()
+        {
+            var behaviours = new List<UdonSharpBehaviour>();
+            var roots = SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var root in roots)
+            {
+                behaviours.AddRange(root.GetComponentsInChildren<UdonSharpBehaviour>(true));
+            }
+
+            return behaviours;
+        }
+
+        public void Compile()
+        {
+            UdonSharpProgramAsset.CompileAllCsPrograms(true);
+        }
+
+        #endregion
     }
-    
-    public void Compile()
-    {
-        UdonSharpProgramAsset.CompileAllCsPrograms(true);
-    }
-    
-    #endregion
 }
