@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using System.Reflection;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEditor.Graphs;
 using VRC.Udon.Common.Interfaces;
 using VRC.Udon.Common;
 using UnityEditorInternal;
@@ -84,18 +85,29 @@ namespace CHAMCHI.BehaviourEditor
 
         public override void OnInspectorGUI()
         {
+            var titleStyle = new GUIStyle();
+            titleStyle.normal.background = null;
+            titleStyle.alignment = TextAnchor.MiddleCenter;
+            GUILayout.Box(((LogPanel)target).Title, titleStyle, GUILayout.ExpandWidth(true), GUILayout.Height(100));
+            GUILayout.Space(20);
+            
             GUI.skin.label.richText = true;
             if (showBase)
             {
-                base.OnInspectorGUI();
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.LabelField("<b>[Editor]</b>", GUI.skin.label);
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Show Base Inspector");
-                showBase = EditorGUILayout.Toggle(showBase);
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.EndVertical();
-                GUI.skin.label.richText = false;
+                EditorUtil.MenuBox("Origin Editor", () =>
+                {
+                    base.OnInspectorGUI();
+                }, new ContentStyle(GUI.skin.label.font));
+                EditorUtil.MenuBox("Editor", () =>
+                {
+                    EditorGUILayout.BeginVertical(GUI.skin.box);
+                    EditorUtil.DrawSubTitle("Editor");
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Show Base Inspector");
+                    showBase = EditorGUILayout.Toggle(showBase);
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndVertical();
+                }, new ContentStyle(GUI.skin.label.font));
                 return;
 
             }
@@ -103,14 +115,10 @@ namespace CHAMCHI.BehaviourEditor
             var behaviour = ((LogPanel)target);
 
             serializedObject.Update();
-
-            GUILayout.Box(((LogPanel)target).Title, GUILayout.ExpandWidth(true), GUILayout.Height(100));
-
-            GUILayout.Space(20);
             if (m_maxlen.intValue > 30000)
                 EditorGUILayout.HelpBox("Values above 3,0000 may cause rendering problems for continuous output.", MessageType.Warning);
             else
-                EditorGUILayout.HelpBox("ALL is OK", MessageType.Info);
+                GUILayout.Space(40f);
             GUILayout.Space(10);
             
             EditorUtil.MenuBox("System", () =>
@@ -123,7 +131,7 @@ namespace CHAMCHI.BehaviourEditor
                                            $"{m_maxlen.intValue.ToString("000000")}" +
                                            $"</size>   <size=15>|</size>                 </b>", GUI.skin.label, GUILayout.Width(100));
                 
-                EditorGUILayout.LabelField("Maximum line Count", GUILayout.Width(130));
+                EditorGUILayout.LabelField("Maximum Character Count", GUILayout.Width(180));
                 m_maxlen.intValue = EditorGUILayout.IntSlider(m_maxlen.intValue, 10, 100000);
                 EditorGUILayout.EndHorizontal();
                 
@@ -157,7 +165,7 @@ namespace CHAMCHI.BehaviourEditor
                                            $"<color=grey>[System] </color>" +
                                            $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>Hello, Iris!</color>" +
                                            $"</size></b>", GUI.skin.label);
-                GUILayout.FlexibleSpace();
+                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
                 Yellow = EditorGUILayout.ColorField(Yellow, GUILayout.MaxWidth(100));
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.BeginHorizontal();
@@ -167,7 +175,7 @@ namespace CHAMCHI.BehaviourEditor
                                            $"<color=grey>[System] </color>" +
                                            $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>Hello, Udon!</color>" +
                                            $"</size></b>", GUI.skin.label);
-                GUILayout.FlexibleSpace();
+                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
                 Red = EditorGUILayout.ColorField(Red, GUILayout.MaxWidth(100));
                 EditorGUILayout.EndHorizontal();
 
@@ -204,26 +212,28 @@ namespace CHAMCHI.BehaviourEditor
             if (m_pool.objectReferenceValue == null || m_text.objectReferenceValue == null || m_playername.objectReferenceValue == null || m_instanceOwner == null)
                 EditorGUILayout.HelpBox("The component setting is missing.\nIt doesn't work at runtime.", MessageType.Error);
             else
-                EditorGUILayout.HelpBox("ALL is OK", MessageType.Info);
+                GUILayout.Space(40f);
             
             GUILayout.Space(10);
 
             behaviour.m_foldAdvanced = EditorUtil.FoldoutMenuBox("Advance Settings", behaviour.m_foldAdvanced, () =>
             {
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.LabelField("<b>[Auto Setter]</b>", GUI.skin.label);
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Auto Set All Debug Fields");
-                behaviour.m_AutoSet = EditorGUILayout.Toggle(behaviour.m_AutoSet);
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Space(15);
 
-                EditorGUILayout.LabelField("<b>[System Components]</b>", GUI.skin.label);
-                EditorGUILayout.PropertyField(m_pool);
-                EditorGUILayout.PropertyField(m_text);
-                EditorGUILayout.PropertyField(m_playername);
-                EditorGUILayout.PropertyField(m_instanceOwner);
-                EditorGUILayout.EndVertical();
+                EditorUtil.SubMenuBox("Auto Setter", () =>
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Auto Set All Debug Fields");
+                    behaviour.m_AutoSet = EditorGUILayout.Toggle(behaviour.m_AutoSet);
+                    EditorGUILayout.EndHorizontal();
+                }, new ContentStyle(behaviour.text.font));
+                GUILayout.Space(15);
+                EditorUtil.SubMenuBox("System Components", () =>
+                {
+                    EditorGUILayout.PropertyField(m_pool);
+                    EditorGUILayout.PropertyField(m_text);
+                    EditorGUILayout.PropertyField(m_playername);
+                    EditorGUILayout.PropertyField(m_instanceOwner);
+                }, new ContentStyle(behaviour.text.font));
 
                 GUILayout.Space(10);
 
@@ -233,7 +243,7 @@ namespace CHAMCHI.BehaviourEditor
             EditorUtil.MenuBox("Editor", () =>
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.LabelField("<b>[Editor]</b>", GUI.skin.label);
+                EditorUtil.DrawSubTitle("Editor");
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Show Base Inspector");
                 showBase = EditorGUILayout.Toggle(showBase);
