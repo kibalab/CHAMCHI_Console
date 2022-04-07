@@ -84,6 +84,7 @@ namespace CHAMCHI.BehaviourEditor
 
         public void UpdateIncludeScripts()
         {
+            /*
             UdonSharpProgramAsset.CompileAllCsPrograms(true);
 
             var roots = SceneManager.GetActiveScene().GetRootGameObjects();
@@ -143,6 +144,7 @@ namespace CHAMCHI.BehaviourEditor
                     }
                 }
             }
+            */
         }
 
         IUdonSymbolTable GetSymbolTable(UdonBehaviour udonBehaviour)
