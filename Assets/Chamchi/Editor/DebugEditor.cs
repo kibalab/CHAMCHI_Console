@@ -18,6 +18,8 @@ namespace CHAMCHI.BehaviourEditor
     [CustomEditor(typeof(LogPanel), true)]
     public class DebugEditor : Editor
     {
+        #region Fields
+
         bool showBase = false;
 
         SerializedProperty m_pool;
@@ -43,6 +45,7 @@ namespace CHAMCHI.BehaviourEditor
 
         #endregion
 
+        #endregion
 
         private void OnEnable()
         {
@@ -79,28 +82,6 @@ namespace CHAMCHI.BehaviourEditor
 
         }
 
-        public void UpdateIncludeScripts()
-        {
-            BehaviourAutoSetter.Run(target);
-        }
-
-        public void UpdateSystemColor()
-        {
-            m_prefix_red.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>";
-            m_prefix_white.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>";
-            m_prefix_green.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>";
-            m_prefix_yellow.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>";
-        }
-
-        public void LoadSystemColor()
-        {
-            ColorUtility.TryParseHtmlString(m_prefix_red.stringValue.Replace("<color=", "").Replace(">", ""), out Red);
-            ColorUtility.TryParseHtmlString(m_prefix_white.stringValue.Replace("<color=", "").Replace(">", ""), out White);
-            ColorUtility.TryParseHtmlString(m_prefix_green.stringValue.Replace("<color=", "").Replace(">", ""), out Green);
-            ColorUtility.TryParseHtmlString(m_prefix_yellow.stringValue.Replace("<color=", "").Replace(">", ""), out Yellow);
-        }
-
-        //UdonSharpEditorUtility.ConvertToUdonBehavioursInternal(Array.ConvertAll(targets, e => e as UdonSharpBehaviour).Where(e => e != null && !UdonSharpEditorUtility.IsProxyBehaviour(e)).ToArray(), true, true, true);
         public override void OnInspectorGUI()
         {
             GUI.skin.label.richText = true;
@@ -126,110 +107,108 @@ namespace CHAMCHI.BehaviourEditor
             GUILayout.Box(((LogPanel)target).Title, GUILayout.ExpandWidth(true), GUILayout.Height(100));
 
             GUILayout.Space(20);
-
             if (m_maxlen.intValue > 30000)
                 EditorGUILayout.HelpBox("Values above 3,0000 may cause rendering problems for continuous output.", MessageType.Warning);
             else
-                GUILayout.Space(40);
-
-
-            EditorGUILayout.LabelField("<b>[Message]</b>", GUI.skin.label);
-            EditorGUILayout.LabelField("Maximum Count");
-            var origin_font = GUI.skin.label.font;
-            if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
-            EditorGUILayout.LabelField($"<b><size=15>" +
-                                       $"0000" +
-                                       $" / " +
-                                       $"</size><size=10>" +
-                                       $"{m_maxlen.intValue}" +
-                                       $"</size></b>", GUI.skin.label, GUILayout.Width(80));
-            m_maxlen.intValue = EditorGUILayout.IntSlider(m_maxlen.intValue, 10, 100000);
-            EditorGUILayout.EndHorizontal();
-            GUI.skin.label.font = origin_font;
-
-
-            GUILayout.Space(25);
-            if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"<b><size=15>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                       $" | " +
-                                       $"<color=grey>[System] </color>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Hello, KIBA!</color>" +
-                                       $"</size></b>", GUI.skin.label);
-
-            White = EditorGUILayout.ColorField(White);
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"<b><size=15>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                       $" | " +
-                                       $"<color=grey>[System] </color>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>Hello, Iris!</color>" +
-                                       $"</size></b>", GUI.skin.label);
-
-            Yellow = EditorGUILayout.ColorField(Yellow);
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"<b><size=15>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                       $" | " +
-                                       $"<color=grey>[System] </color>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>Hello, Udon!</color>" +
-                                       $"</size></b>", GUI.skin.label);
-
-            Red = EditorGUILayout.ColorField(Red);
-            EditorGUILayout.EndHorizontal();
-            GUI.skin.label.font = origin_font;
-
-            EditorGUILayout.BeginHorizontal();
-            Green = EditorGUILayout.ColorField(Green, GUILayout.Width(110));
-            if (GUILayout.Button("Save System Color"))
+                EditorGUILayout.HelpBox("ALL is OK", MessageType.Info);
+            GUILayout.Space(10);
+            
+            EditorUtil.MenuBox("System", () =>
             {
-                UpdateSystemColor();
-            }
-            EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"<b><size=15>" +
+                                           $"0000" +
+                                           $" / " +
+                                           $"</size><size=10>" +
+                                           $"{m_maxlen.intValue.ToString("000000")}" +
+                                           $"</size>   <size=15>|</size>                 </b>", GUI.skin.label, GUILayout.Width(100));
+                
+                EditorGUILayout.LabelField("Maximum line Count", GUILayout.Width(130));
+                m_maxlen.intValue = EditorGUILayout.IntSlider(m_maxlen.intValue, 10, 100000);
+                EditorGUILayout.EndHorizontal();
+                
+                GUILayout.Space(15);
+
+                if (GUILayout.Button("Compile Program & Set Debug Fields"))
+                {
+                    UpdateIncludeScripts();
+                }
+            }, new ContentStyle(behaviour.text.font));
+
+            GUILayout.Space(20);
+            
+            EditorUtil.MenuBox("Style", () =>
+            {
+                var inspectorWidth = EditorGUIUtility.currentViewWidth;
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"<b><size=15>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                           $" | " +
+                                           $"<color=grey>[System] </color>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Hello, KIBA!</color>" +
+                                           $"</size></b>", GUI.skin.label);
+                if(inspectorWidth > 600) GUILayout.FlexibleSpace();
+                White = EditorGUILayout.ColorField(White, GUILayout.MaxWidth(100));
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"<b><size=15>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                           $" | " +
+                                           $"<color=grey>[System] </color>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>Hello, Iris!</color>" +
+                                           $"</size></b>", GUI.skin.label);
+                GUILayout.FlexibleSpace();
+                Yellow = EditorGUILayout.ColorField(Yellow, GUILayout.MaxWidth(100));
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"<b><size=15>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                           $" | " +
+                                           $"<color=grey>[System] </color>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>Hello, Udon!</color>" +
+                                           $"</size></b>", GUI.skin.label);
+                GUILayout.FlexibleSpace();
+                Red = EditorGUILayout.ColorField(Red, GUILayout.MaxWidth(100));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                Green = EditorGUILayout.ColorField(Green, GUILayout.Width(110));
+                if (GUILayout.Button("Save System Color"))
+                {
+                    UpdateSystemColor();
+                }
+                EditorGUILayout.EndHorizontal();
+
+                GUILayout.Space(10);
+
+                if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
+
+                EditorGUILayout.LabelField("<b>[Name Highlight]</b>", GUI.skin.label);
+                EditorGUILayout.BeginHorizontal(GUI.skin.box);
+                EditorGUILayout.LabelField($"<b><size=15>" +
+                                           $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
+                                           $" | " +
+                                           $"<color=grey>[System] </color>" +
+                                                (m_onChamchi.boolValue ? $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know <b><color=#50bcdf>CHAMCHI</color></b>, <b><color=#50bcdf>참치</color></b>?</color>"
+                                                : $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know CHAMCHI, 참치?</color>") +
+                                           $"</size></b>", GUI.skin.label);
+
+                m_onChamchi.boolValue = EditorGUILayout.ToggleLeft("Toggle Highlight", m_onChamchi.boolValue);
+                EditorGUILayout.EndHorizontal();
+
+            }, new ContentStyle(behaviour.text.font));
+            
 
             GUILayout.Space(10);
-
-            if (behaviour.text != null) GUI.skin.label.font = behaviour.text.font;
-
-            EditorGUILayout.LabelField("<b>[Name Highlight]</b>", GUI.skin.label);
-            EditorGUILayout.BeginHorizontal(GUI.skin.box);
-            EditorGUILayout.LabelField($"<b><size=15>" +
-                                       $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>[00:00:00.00]</color>" +
-                                       $" | " +
-                                       $"<color=grey>[System] </color>" +
-                                            (m_onChamchi.boolValue ? $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know <b><color=#50bcdf>CHAMCHI</color></b>, <b><color=#50bcdf>참치</color></b>?</color>"
-                                            : $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>Do you know CHAMCHI, 참치?</color>") +
-                                       $"</size></b>", GUI.skin.label);
-
-            m_onChamchi.boolValue = EditorGUILayout.ToggleLeft("Toggle Highlight", m_onChamchi.boolValue);
-            EditorGUILayout.EndHorizontal();
-
-            GUI.skin.label.font = origin_font;
-
-            EditorGUILayout.EndVertical();
-
-
-
-
-            GUILayout.Space(15);
-
-            if (GUILayout.Button("Compile Program & Set Debug Fields"))
-            {
-                UpdateIncludeScripts();
-            }
 
             if (m_pool.objectReferenceValue == null || m_text.objectReferenceValue == null || m_playername.objectReferenceValue == null || m_instanceOwner == null)
                 EditorGUILayout.HelpBox("The component setting is missing.\nIt doesn't work at runtime.", MessageType.Error);
             else
-                GUILayout.Space(40);
+                EditorGUILayout.HelpBox("ALL is OK", MessageType.Info);
+            
+            GUILayout.Space(10);
 
-            behaviour.m_foldAdvanced = EditorGUILayout.Foldout(behaviour.m_foldAdvanced, "Advance Settings");
-            if (behaviour.m_foldAdvanced)
+            behaviour.m_foldAdvanced = EditorUtil.FoldoutMenuBox("Advance Settings", behaviour.m_foldAdvanced, () =>
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 EditorGUILayout.LabelField("<b>[Auto Setter]</b>", GUI.skin.label);
@@ -249,20 +228,50 @@ namespace CHAMCHI.BehaviourEditor
                 GUILayout.Space(10);
 
                 if(BehaviourAutoSetter.GetSettedBehaviours.Count > 0) list.DoLayoutList();
+            }, new ContentStyle(behaviour.text.font));
 
-            }
-
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            EditorGUILayout.LabelField("<b>[Editor]</b>", GUI.skin.label);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Show Base Inspector");
-            showBase = EditorGUILayout.Toggle(showBase);
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndVertical();
+            EditorUtil.MenuBox("Editor", () =>
+            {
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.LabelField("<b>[Editor]</b>", GUI.skin.label);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Show Base Inspector");
+                showBase = EditorGUILayout.Toggle(showBase);
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndVertical();
+            }, new ContentStyle(behaviour.text.font));
+            
+            
 
             serializedObject.ApplyModifiedProperties();
 
             GUI.skin.label.richText = false;
         }
+
+        #region Sub Invoke Functions
+
+        public void UpdateIncludeScripts()
+        {
+            BehaviourAutoSetter.Run(target);
+        }
+
+        public void UpdateSystemColor()
+        {
+            m_prefix_red.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Red)}>";
+            m_prefix_white.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(White)}>";
+            m_prefix_green.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Green)}>";
+            m_prefix_yellow.stringValue = $"<color=#{ColorUtility.ToHtmlStringRGB(Yellow)}>";
+        }
+
+        public void LoadSystemColor()
+        {
+            ColorUtility.TryParseHtmlString(m_prefix_red.stringValue.Replace("<color=", "").Replace(">", ""), out Red);
+            ColorUtility.TryParseHtmlString(m_prefix_white.stringValue.Replace("<color=", "").Replace(">", ""), out White);
+            ColorUtility.TryParseHtmlString(m_prefix_green.stringValue.Replace("<color=", "").Replace(">", ""), out Green);
+            ColorUtility.TryParseHtmlString(m_prefix_yellow.stringValue.Replace("<color=", "").Replace(">", ""), out Yellow);
+        }
+        
+
+        #endregion
     }
 }
