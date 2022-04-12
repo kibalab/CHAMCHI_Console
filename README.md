@@ -26,6 +26,9 @@ Debug console for VRChat UdonSharp development<br>
 * 📓 Project Manage<br>
 * 🖧 Networking<br>
 
+## OLD Project / 구 프로젝트
+https://github.com/kibalab/K13A_Udon_Console
+
 ## 라이센스 / License
 
 MIT License
