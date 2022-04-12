@@ -61,7 +61,7 @@ Can view other people's logs<br>
 ### [KIBA_](https://github.com/kibalab)
 * 🏗 UI Design<br>
 * 🎨 Resource Design<br>
-* 🎲 System Dev<br>
+* 🎲 System Design<br>
 * 📓 Project Manage<br>
 * 🖧 Networking<br>
 
