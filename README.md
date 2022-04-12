@@ -16,14 +16,14 @@ Debug console for VRChat UdonSharp development<br>
 ## Use / 사용
 
 ### Logger Method Parameter
-```
+```CSharp
 Debug.Log(<UdonSharpBehaviour Class>, <String Message>);
 Debug.LogWarn(<UdonSharpBehaviour Class>, <String Message>);
 Debug.LogError(<UdonSharpBehaviour Class>, <String Message>);
 ```
 
 ### Example
-```
+```CSharp
 public class MyClass
 {
   public logPanel Debug;
