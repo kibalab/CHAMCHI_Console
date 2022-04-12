@@ -9,7 +9,7 @@ Debug console for VRChat UdonSharp development<br>
   
 ## Require / 필요
 [VRChat](https://store.steampowered.com/app/438100/VRChat/)<br>
-[Unity 2018.4](https://unity3d.com/kr/unity/whats-new/2018.4.20)<br>
+[Unity 2019.4](https://unity3d.com/kr/unity/whats-new/2019.4.31)<br>
 [VRCSDK 3.0](https://vrchat.com/home/download)<br>
 [UDONSharp](https://github.com/MerlinVR/UdonSharp)<br>
 
